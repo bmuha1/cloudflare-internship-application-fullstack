@@ -8,8 +8,8 @@ class ElementHandler {
 
     element(element) {
         element.setInnerContent(this.attribute);
-        // Redirect users to my personal website
         if (element.tagName === 'a') {
+            // Redirect users to my personal website
             element.setAttribute('href', 'https://companion-cats.herokuapp.com/');
         }
     }
@@ -41,7 +41,7 @@ async function handleRequest(request) {
     let chosenResponse = await fetch(chosenUrl);
 
     // Extra credit 1: Changing copy/URLs
-    // Customize title, description, and link
+    // Customize title, header, description, and link
     chosenResponse = new HTMLRewriter()
         .on('title', new ElementHandler("Brent's Title"))
         .transform(chosenResponse);
