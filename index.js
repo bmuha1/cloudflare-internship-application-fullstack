@@ -19,7 +19,15 @@ async function handleRequest(request) {
     const url = 'https://cfw-takehome.developers.workers.dev/api/variants';
     const response = await fetch(url);
     const urls = (await response.json()).variants;
-    const chosenUrl = urls[Math.floor(Math.random() * urls.length)];
+    const cookie = request.headers.get('cookie');
+    let chosenUrl;
+    if (cookie && cookie.includes('variant=1')) {
+        chosenUrl = urls[0];
+    } else if (cookie && cookie.includes('variant=2')) {
+        chosenUrl = urls[1];
+    } else {
+        chosenUrl = urls[Math.floor(Math.random() * urls.length)];
+    }
     let chosenResponse = await fetch(chosenUrl);
     chosenResponse = new HTMLRewriter()
         .on('title', new ElementHandler("Brent's Title"))
@@ -33,5 +41,8 @@ async function handleRequest(request) {
     chosenResponse = new HTMLRewriter()
         .on('a#url', new ElementHandler('Visit Companion Cats'))
         .transform(chosenResponse);
+    if (!cookie) {
+        chosenResponse.headers.set('Set-Cookie', 'variant=' + chosenUrl.slice(-1));
+    }
     return chosenResponse;
 }
